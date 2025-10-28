@@ -10,7 +10,7 @@ router.post('/register', authController.register);
 // @route   POST /api/auth/login
 // @desc    Login an existing user by email
 // @access  Public
-router.post('/login/email', authController.loginByEmail);
+router.post('/login/username', authController.loginByUserName);
 
 // @route   POST /api/auth/login
 // @desc    Login an existing user by phone

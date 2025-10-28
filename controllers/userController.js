@@ -10,7 +10,7 @@ exports.get_profile = async (req, res) => {
         res.status(400).json({ message: 'User not found' });
     }
 
-    res.status(201).json({ user: { id: user.id, name: user.name, email: user.email, phone: user.phone } });
+    res.status(201).json({ user: { id: user.id, name: user.name, userName: user.userName, email: user.email, phone: user.phone } });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });

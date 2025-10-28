@@ -6,11 +6,14 @@ require('dotenv').config();
 const SALT_ROUNDS = 10;
 
 exports.register = async (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, userName, email, password, phone } = req.body;
 
   try {
     if(!name){
         return res.status(400).json({ message: 'Please enter name' });
+    }
+    if(!userName){
+        return res.status(400).json({ message: 'Please enter user name' });
     }
     if(!email){
         return res.status(400).json({ message: 'Please enter email' });
@@ -34,40 +37,42 @@ exports.register = async (req, res) => {
 
     const user = await User.create({
       name,
+      userName,
       email,
       phone,
       password: hashedPassword,
     });
 
-    const token = jwt.sign({ id: user.id, name:user.name ,email: user.email }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user.id, name:user.name, userName: user.userName, email: user.email }, process.env.JWT_SECRET);
 
-    res.status(201).json({ user: { id: user.id, name: user.name, email: user.email }, token });
+    res.status(201).json({ user: { id: user.id, name: user.name, userName: user.userName, email: user.email }, token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
 
-exports.loginByEmail = async (req, res) => {
-  const { email, password } = req.body;
+exports.loginByUserName = async (req, res) => {
+  const { userName, password } = req.body;
 
   try {
-    if(!email){
-        return res.status(400).json({ message: 'Please enter email' });
+    if(!userName){
+        return res.status(400).json({ message: 'Please enter user name' });
     }
     if(!password){
         return res.status(400).json({ message: 'Please enter password' });
     }
 
-    const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(404).json({ message: 'Email doesnt exist' });
+    const user = await User.findOne({ where: { userName } });
+    if (!user) return res.status(404).json({ message: 'Username doesnt exist' });
     
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(404).json({ message: 'Wrong password' });
 
-    const token = jwt.sign({ id: user.id, name:user.name ,email: user.email }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user.id, name:user.name, userName: user.userName, email: user.email }, process.env.JWT_SECRET);
 
-    res.status(200).json({ user: { id: user.id, name: user.name, email: user.email }, token });
+    res.status(200).json({ user: { id: user.id, name: user.name, userName: user.userName, email: user.email }, token });
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
@@ -91,9 +96,9 @@ exports.loginByPhone = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(404).json({ message: 'Wrong password' });
 
-    const token = jwt.sign({ id: user.id, name:user.name ,email: user.email }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user.id, name:user.name, userName: user.userName, email: user.email }, process.env.JWT_SECRET);
 
-    res.status(200).json({ user: { id: user.id, name: user.name, email: user.email }, token });
+    res.status(200).json({ user: { id: user.id, name: user.name, userName: user.userName, email: user.email }, token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
