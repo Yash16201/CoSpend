@@ -38,5 +38,20 @@ module.exports = (sequelize) => {
     timestamps: true,
     underscored: false,
   });
+
+  User.associate = (models) => {
+    User.hasMany(models.Connection, {
+      foreignKey: 'userId',
+      as: 'connections',
+      onDelete: 'CASCADE',
+    });
+
+    User.hasMany(models.Connection, {
+      foreignKey: 'friendId',
+      as: 'friends',
+      onDelete: 'CASCADE',
+    });
+  };
+
   return User;
 };
