@@ -1,14 +1,24 @@
+const { where } = require('sequelize');
 const { Connection, User, Sequelize } = require('../models');
 const { Op } = Sequelize;
 
 exports.send_request_to_connect = async (req, res) => {
   try {
-    const { friendId, status } = req.body;
+    const { friendId } = req.body;
     const { id } = req.user;
 
     if (!friendId) return res.status(400).json({ message: 'Friend Id is missing' });
-    if (!status) return res.status(400).json({ message: 'Status is missing' });
     if (friendId === id) return res.status(400).json({ message: 'You cannot connect with yourself' });
+
+    const existingFriend = await User.findOne({
+      where:{
+        id: friendId
+      }
+    });
+
+    if(!existingFriend){
+      return res.status(404).json({ message: 'Your connection is not found' });
+    }
 
     const existing = await Connection.findOne({
       where: {
@@ -24,7 +34,7 @@ exports.send_request_to_connect = async (req, res) => {
       if (existing.status === 'accepted') return res.status(400).json({ message: 'Already connected' });
     }
 
-    const newConnection = await Connection.create({ userId: id, friendId, status });
+    const newConnection = await Connection.create({ userId: id, friendId, status:'pending' });
     return res.status(201).json({ message: 'Connection request sent', connection: newConnection });
   } catch (err) {
     console.error(err);
