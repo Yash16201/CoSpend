@@ -19,10 +19,12 @@ sequelize
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const connectionRoutes = require('./routes/connectionRoutes');
 
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/connection', connectionRoutes);
 
 
 app.listen(PORT, () => {
